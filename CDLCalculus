@@ -1,0 +1,69 @@
+Require Import Coq.Lists.List.
+Require Import Coq.Arith.Arith.
+Require Import Coq.Strings.String.
+
+(* Syntax of Clock-based Dynamic Logic *)
+
+(* Syntax of SEP (Synchonous Event Program) *)
+
+(* =============== Syntax of Expressions ===================*)
+
+(* Arith Expression `e'*)
+Inductive e_exp := 
+  enumC : nat -> e_exp | 
+  evarC : string -> e_exp | 
+  eplusC : e_exp -> e_exp -> e_exp |
+  (*non-necessary expression*)
+  eminusC : e_exp -> e_exp -> e_exp |
+  emulLC : nat -> e_exp -> e_exp |
+  emulRC : e_exp -> nat -> e_exp |
+  edivC : e_exp -> nat -> e_exp
+.
+
+Print e_exp.
+
+(* Boolean Expression `P'*)
+Inductive P_exp := 
+  PtrueC : P_exp |
+  PlteC : e_exp -> e_exp -> P_exp |
+  PnegC : P_exp -> P_exp |
+  PandC : P_exp -> P_exp -> P_exp |
+  (*non-necesarry expression*)
+  PfalseC : P_exp |
+  PltC : e_exp -> e_exp -> P_exp |
+  PgtC : e_exp -> e_exp -> P_exp |
+  PgteC : e_exp -> e_exp -> P_exp |
+  PeqC : e_exp -> e_exp -> P_exp |
+  PorC : P_exp -> P_exp -> P_exp |
+  PimpC : P_exp -> P_exp -> P_exp
+.
+Print P_exp.
+
+(* =============== Syntax of Event ===================*)
+
+
+(* Event *)
+Inductive EvtElement : Type := 
+  sigC : string -> e_exp -> EvtElement | (* Signal *)
+  assC : string -> e_exp -> EvtElement  (* Assignment *)
+.
+
+Definition Evt := list EvtElement.
+
+Definition idle : Evt := nil.
+Print idle.
+
+
+(* SEP *)
+Inductive SEP : Type := 
+  skip : SEP | (* skip program $\varepsilon$ *)
+  evtC : Evt -> SEP | (* Event *)
+  tstC : P_exp -> Evt -> SEP | (* Test *)
+  seqC : SEP -> SEP -> SEP | (* sequence *)
+  choC : SEP -> SEP -> SEP | (* choice *)
+  loopC : SEP -> SEP (* loop *)
+.
+
+
+(* ============================ Definition of Sequent ===========================*)
+Inductive SequentType : Type := sequent : Left_FOL -> Left -> Right -> Right_FOL. 
